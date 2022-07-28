@@ -1,0 +1,8 @@
+syntax="proto3";
+
+option go_package="./prototest;prototest";
+
+message User{
+  string Name =1;
+  string Age =2;
+}

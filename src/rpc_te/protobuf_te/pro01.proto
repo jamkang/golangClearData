@@ -1,0 +1,80 @@
+syntax="proto3";
+//syntax 选择的版本，如果不写，默认为proto2
+//注意在第一行不能为空或者注解
+
+option go_package="./;protobuf_te";
+
+//声明包名，默认转换成go中的包名与此一致，如果需要指定不一样的包名，可以使用go_package
+
+package protobuf_te;
+
+//从执行protoc这个命令的当前目录开始算起,如见pro03.proto
+import "google/protobuf/any.proto";
+
+//message为关键词，有点像定义结构体
+message Person{
+  string name=1;
+  int32 age =2;
+  //这1，2不是给赋值，二十给变量一个编号
+  //1到15编号只占用1个字节，16到2047会占用2个
+  //而且19000到19999不能使用
+
+  //字段格式：限定修饰符 | 数据类型 | 字段名称 | = | 字段编码值 | [字段默认值]
+  /*
+  Required: 表示是一个必须字段，必须相对于发送方，在发送消息之前必须设置该字段的值，对于接收方，必须能够识别该字段的意思
+  Optional：表示是一个可选字段，可选对于发送方，在发送消息时，可以有选择性的设置或者不设置该字段的值
+  Repeated：表示该字段可以包含0~N个元素。其特性和optional一样，但是每一次可以包含多个值。可以看作是在传递一个数组的值
+   */
+  //枚举类型
+  enum Corpus{
+    option allow_alias =true; //默认可以多个名字用同一个值
+    UNIVER =0;
+    WEB=1;
+    IMAGE=2;
+    KEUAI=2;
+  }
+  Corpus corpus =4;
+}
+
+
+//嵌套
+message SearchRespone{
+  repeated Result results=1;
+}
+
+message Result{
+  string url=1;
+  string title=2;
+  //Any 可以表示不在.proto 中定义任意的内置类型
+  repeated google.protobuf.Any detail =3;
+  //oneof
+  oneof test_oneof{
+    string name=4;
+    //map不能定义在这个里面
+  }
+  //map
+  map<string,int32 > points=5;
+}
+
+
+
+
+
+/*
+以前的版本
+在编译前还需要下载插件
+    go get -u github.com/golang/protobuf/protoc-gen-go
+然后使用protoc --go_out=. *.proto去执行
+选择生产的包路劲和名字，如下在本目录下生成一个hello的包
+
+也可以在go mod中编写require google.goland.org/protobuf v1.27.1在执行项目时会自动下载
+生产grpc使用的
+  protoc --go_out=plugins=grpc:. .proto
+现在的版本
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+在gopath下就会出现两个相关的执行文件
+
+  1. 利用proto 文件重新生产go文件
+  protoc --go_out=./server --go-grpc_out=./server .proto
+ */

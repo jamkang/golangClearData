@@ -1,0 +1,12 @@
+syntax="proto3";
+
+package protobuf_te;
+//需要在生产的文件后面添加 --proto_path=
+import "pro02.proto";
+option go_package="./;protobuf_te";
+
+message Student{
+  string  StuNumber =1;
+  ProdRequest Person =2;
+}
+

@@ -1,0 +1,34 @@
+syntax="proto3";
+
+package protobuf_te;
+
+option go_package="./;protobuf_te";
+
+message ProdRequest{
+  int32 prod_id =1; //商品id
+}
+
+message ProdResponse{
+  int32 prod_stock=1; //商品库存
+}
+
+/*
+自己定义了一个rpc方法，rpc 方法名 （传入参数）returns （传出数据）
+ */
+service ProService {
+  rpc GetProdStock (ProdRequest) returns (ProdResponse);
+}
+
+
+/*
+这个和pro01中的编译不一样，如下：
+  protoc --go_out=plugins=grpc:. .proto
+
+新版本
+1. 利用proto 文件重新生产go文件
+  protoc --go_out=./pro02_new_version --go-grpc_out=./pro02_new_version pro02.proto
+  执行会在本目录下的pro02_new_version下生产两个文件
+
+  还可以添加参数 --go_opt=paths=source_relative
+  意思为在go_out或go-groc_out的目录路径+proto前的路劲
+ */
